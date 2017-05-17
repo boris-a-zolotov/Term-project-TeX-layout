@@ -1,0 +1,54 @@
+\vsection
+[Список из перестановок действительно является таковым]
+{Тип Unicalized}
+
+\parhref{https://github.com/boris-a-zolotov \\
+	/Computational-complexity-of-quickest-sort \\
+	/blob/master/final\_length.agda}
+
+\abz Пусть алгоритм сортировки расставляет в свои листья перестановки (длины $n$) из списка $l$, на котором он определён. Для доказательства некоторых важных свойств алгоритмов нам потребуется явное доказательство того, что все элементы $l$ являются перестановками в смысле математического определения (как и обещано в предыдущем параграфе) — то есть
+
+$$\forall~ k \in \{1 \ldots (\mathrm{length}\ l) - 1\}
+\ \ \forall~ i,j \in \{1 \ldots (n-1)\}$$
+
+\vspace{-0.4cm}
+$$i \ne j \ \ \Longrightarrow
+\ \ (l_k)_i \ne (l_k)_j.$$
+
+\abz Этому утверждению (опять же, посредством изоморфизма Карри—Ховарда) будет соответствовать тип {\tt Unicalized}, определённый следующим образом:
+
+\begin{verbatim}
+data Unicalized : {n : ℕ} →
+    List (BorderedNlist n) → Set
+where
+    u-nil : {n : ℕ} → Unicalized {n} []
+    _u-cons_ : {n : ℕ} →
+        {l : List (BorderedNlist n)} → {x : BorderedNlist n} →
+        ((i j : Fin n) → (i ≢ j) → nth x i ≢ nth x j) →
+        Unicalized l → Unicalized (x :: l)
+\end{verbatim}
+
+\abz Элемент типа {\tt Unicalized l} на самом деле является списком, элементы которого соответствуют элементам {\tt l}. Каждый элемент этого списка есть доказательство того, что соответствующий ему элемент {\tt l} — перестановка.
+
+\abz Несложно доказать следующую теорему:
+
+\newthm{projUnic}{{\bf (projUnic)\ \ \ }Если список $l_1$ является подпоследовательностью (подсписком) списка $l_0$, то $\mathtt{Unicalized}\ l_0$ влечёт $\mathtt{Unicalized}\ l_1$.}
+
+Очевидно, что если к любому списку применить функцию {\tt filter} по любому предикату, то мы получим его подсписок. На этом основании из теоремы~\ref{projUnic} очевидно следует
+
+\newthm{filterUnic}{
+{\bf (filterUnic)\ \ \ }Если для списка $l$, состоящего из перестановок длины $n$, верно $\mathtt{Unicalized}\ l$, то
+$$\forall~ i,j \in \{1 \ldots (n-1)\} \text{\ \ имеет место\ \ }
+	\mathtt{Unicalized}\ (\mathtt{cmpFilter}\ i\ j\ l).$$}
+
+Приведём пример утверждения, для доказательства которого необходимо наличие {\tt Unicalized} для исходного списка — и которое, легко понять, не верно в противном случае:
+
+\def\lth{\mathrm{length}\ }
+
+\newthm{FILTERLENGTH}{
+{\bf (FILTERLENGTH)\ \ \ }Если для списка $l$ доказано $\mathtt{Unicalized}\ l$, то для любых $i,j \in \{1 \ldots (n-1)\}$, $i \ne j$ выполнено
+$$\lth l\ \ \le\ \ 
+	\lth (\mathtt{cmpFilter}\ i\ j\ l) +
+	\lth (\mathtt{cmpFilter}\ j\ i\ l).$$}
+
+С доказательствами этих и других утверждений читатель может ознакомиться в исходном коде.

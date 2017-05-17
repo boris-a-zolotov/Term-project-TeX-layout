@@ -1,0 +1,40 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{coorsach}
+
+\setcounter{secnumdepth}{0}
+\setcounter{tocdepth}{4}
+
+\begin{document}
+
+\renewcommand{\thepage}{\roman{page}}
+\setcounter{page}{0}
+
+\input{00-titlepage}
+
+\ \\ [1.2cm]
+\input{01-intro}
+\vfill\eject
+
+\ \\ [1.2cm]
+\setcounter{page}{0}
+\tableofcontents
+\newpage
+
+\renewcommand{\thepage}{\arabic{page}}
+\setcounter{page}{1}
+
+\ \\ [1.2cm]
+\input{02-ideaofproof}
+\input{03-equation-properties}
+\input{04-permutations}
+\input{05-unicalized}
+\input{06-sorting-algorithms}
+\input{07-noexist}
+\input{08-autogen}
+\input{09-results}
+
+\vfill\eject
+\ \\ [0.27cm]
+\input{10-references}
+
+\end{document}

@@ -1,0 +1,72 @@
+\vsection
+[Формализация понятия алгоритма сортировки]
+{Алгоритм сортировки и его характеристики}
+
+\subsection
+[Алгоритм сортировки в Agda]
+{Алгоритм}
+
+\parhref{https://github.com/boris-a-zolotov \\
+	/Computational-complexity-of-quickest-sort \\
+	/blob/master/algorithm.agda}
+
+\abz В первом разделе мы определили алгоритм сортировки. На Agda это определение будет выглядеть следующим образом:
+
+\begin{verbatim}
+data Alg : {n : ℕ} → List (BorderedNlist n) → Set where
+    leaf : {n : ℕ} → (b : BorderedNlist n) → Alg (b :: [])
+    node : {n : ℕ} → {l : List (BorderedNlist n)} →
+        (i j : Fin n) → (i ≢ j) →
+        Alg (cmpFilter i j l) → Alg (cmpFilter j i l) → Alg l
+\end{verbatim}
+
+Действительно, всякий алгоритм сортировки — это либо «лист» (когда мы наверняка нашли единственную перестановку), либо «узел»: когда мы сравниваем элементы на двух фиксированных позициях в каждой из перестановок, и для каждого из подсписков (где $(l_k)_i < (l_k)_j$, и где $(l_k)_i \not < (l_k)_j$) у нас есть алгоритм сортировки.
+
+\abz С примерами описания алгоритмов сортировки читатель может ознакомиться в исходном коде.
+
+\subsection
+[Глубина и количество листьев алгоритма сортировки]
+{Глубина и количество листьев}
+
+\parhref{https://github.com/boris-a-zolotov \\
+	/Computational-complexity-of-quickest-sort \\
+	/blob/master/alg2n.agda}
+
+\abz Глубина алгоритма сортировки (она также была рассмотрена нами в первом разделе) определяется в Agda следующим образом:
+
+\begin{verbatim}
+depth : {n : ℕ} →
+    {l : List (BorderedNlist n)} → Alg l → ℕ
+depth (leaf b) = 0
+depth (node i j p a1 a2) = suc ((depth a1) ⊔ (depth a2))
+\end{verbatim}
+
+Количество листьев для алгоритма вводится аналогично:
+
+\begin{verbatim}
+leafnum : {n : ℕ} →
+    {l : List (BorderedNlist n)} → Alg l → ℕ
+leafnum (leaf b) = 1
+leafnum (node i j p a1 a2) = (leafnum a1) + (leafnum a2)
+\end{verbatim}
+
+Как уже было сказано, количество листьев алгоритма определяет, сколько перестановок он может обработать. Это и утверждает следующий факт, для доказательства которого потребовалась теорема \ref{FILTERLENGTH}:
+
+\newthm{lenLeafNum}{
+{\bf (lenLeafNum)\ \ \ }Для любого алгоритма $A$, принадлежащего типу $\mathtt{Alg}\ l$, при условии $\mathtt{Unicalized}\ l$ выполнено
+$$\lth l\ \le\ \mathtt{leafnum}\ A.$$
+}
+
+\subsection
+[Связь между сложностью алгоритма и длиной его списка]
+{Связь между ними}
+
+С использованием теоремы \ref{lenLeafNum} доказан крайне полезный в дальнейшем аналог теоремы \ref{optimalsort}:
+
+\newthm{len2depth}{{\bf (len2depth)\ \ \ }
+$$\forall~l\ \ \ \forall~A \in \mathtt{Alg}\ l$$
+\vspace{-0.4cm}
+$$\mathtt{Unicalized}\ l\ \ \Longrightarrow\ \ \lth l\ \le \ 2^{\mathtt{depth}\,A}.$$
+\vspace{-0.4cm}}
+
+Доказательства всех упомянутых теорем приведены в исходном коде.
